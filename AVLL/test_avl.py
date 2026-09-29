@@ -5,7 +5,8 @@ import io
 import random
 import unittest
 
-from AVLL import ArvoreAVL, Veiculo
+from AVLL import ArvoreAVL
+from veiculos import Veiculo
 
 
 def veiculo(chave: str) -> Veiculo:

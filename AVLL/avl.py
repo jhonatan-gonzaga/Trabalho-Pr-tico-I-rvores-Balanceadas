@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-if __package__:
-    from .modelos import Veiculo
-else:
-    from modelos import Veiculo
+from veiculos import Veiculo
 
 
 class NoAVL:
