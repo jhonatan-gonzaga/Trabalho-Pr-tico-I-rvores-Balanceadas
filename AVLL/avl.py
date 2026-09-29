@@ -184,3 +184,57 @@ class ArvoreAVL:
         while no.esquerda is not None:
             no = no.esquerda
         return no
+
+    @staticmethod
+    def _maximo(no: NoAVL) -> NoAVL:
+        while no.direita is not None:
+            no = no.direita
+        return no
+
+    def minimo(self) -> Veiculo | None:
+        return self._minimo(self.raiz).veiculo if self.raiz is not None else None
+
+    def maximo(self) -> Veiculo | None:
+        return self._maximo(self.raiz).veiculo if self.raiz is not None else None
+
+    def pre_ordem(self) -> list[Veiculo]:
+        resultado: list[Veiculo] = []
+
+        def percorrer(no: NoAVL | None) -> None:
+            if no is not None:
+                resultado.append(no.veiculo)
+                percorrer(no.esquerda)
+                percorrer(no.direita)
+
+        percorrer(self.raiz)
+        return resultado
+
+    def em_ordem(self) -> list[Veiculo]:
+        resultado: list[Veiculo] = []
+
+        def percorrer(no: NoAVL | None) -> None:
+            if no is not None:
+                percorrer(no.esquerda)
+                resultado.append(no.veiculo)
+                percorrer(no.direita)
+
+        percorrer(self.raiz)
+        return resultado
+
+    def pos_ordem(self) -> list[Veiculo]:
+        resultado: list[Veiculo] = []
+
+        def percorrer(no: NoAVL | None) -> None:
+            if no is not None:
+                percorrer(no.esquerda)
+                percorrer(no.direita)
+                resultado.append(no.veiculo)
+
+        percorrer(self.raiz)
+        return resultado
+
+    def obter_altura(self) -> int:
+        return self._obter_altura(self.raiz)
+
+    def obter_quantidade_nos(self) -> int:
+        return self.quantidade_nos
