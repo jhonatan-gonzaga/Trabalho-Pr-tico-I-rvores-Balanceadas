@@ -139,3 +139,48 @@ class ArvoreAVL:
                 return no
             no = no.esquerda if renavam < no.veiculo.renavam else no.direita
         return None
+
+    def remover(self, renavam: str) -> bool:
+        """Remove a chave e retorna False quando ela não existe."""
+        chave = Veiculo.normalizar_renavam(renavam)
+        self.raiz, removido = self._remover(self.raiz, chave)
+        if removido:
+            self.quantidade_nos -= 1
+            self._log(f"Removido RENAVAM {chave}.")
+        else:
+            self._log(f"RENAVAM não encontrado: {chave}.")
+        return removido
+
+    def _remover(self, no: NoAVL | None, renavam: str) -> tuple[NoAVL | None, bool]:
+        if no is None:
+            return None, False
+
+        self.comparacoes += 1
+        if renavam < no.veiculo.renavam:
+            no.esquerda, removido = self._remover(no.esquerda, renavam)
+        elif renavam > no.veiculo.renavam:
+            no.direita, removido = self._remover(no.direita, renavam)
+        else:
+            if no.esquerda is None:
+                return no.direita, True
+            if no.direita is None:
+                return no.esquerda, True
+
+            sucessor = self._minimo(no.direita)
+            no.veiculo = sucessor.veiculo
+            no.direita = self._remover_minimo(no.direita)
+            removido = True
+
+        return (self._rebalancear(no, "remocao") if removido else no), removido
+
+    def _remover_minimo(self, no: NoAVL) -> NoAVL | None:
+        if no.esquerda is None:
+            return no.direita
+        no.esquerda = self._remover_minimo(no.esquerda)
+        return self._rebalancear(no, "remocao")
+
+    @staticmethod
+    def _minimo(no: NoAVL) -> NoAVL:
+        while no.esquerda is not None:
+            no = no.esquerda
+        return no
