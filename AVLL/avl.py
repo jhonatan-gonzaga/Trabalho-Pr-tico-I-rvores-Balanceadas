@@ -107,6 +107,9 @@ class ArvoreAVL:
         if inserido:
             self.quantidade_nos += 1
             self._log(f"Inserido RENAVAM {veiculo.renavam}.")
+            if self.detalhado:
+                self._log("Árvore após a inserção e o rebalanceamento:")
+                self.exibir()
         else:
             self._log(f"RENAVAM duplicado: {veiculo.renavam}.")
         return inserido
@@ -147,6 +150,9 @@ class ArvoreAVL:
         if removido:
             self.quantidade_nos -= 1
             self._log(f"Removido RENAVAM {chave}.")
+            if self.detalhado:
+                self._log("Árvore após a remoção e o rebalanceamento:")
+                self.exibir()
         else:
             self._log(f"RENAVAM não encontrado: {chave}.")
         return removido
@@ -238,3 +244,67 @@ class ArvoreAVL:
 
     def obter_quantidade_nos(self) -> int:
         return self.quantidade_nos
+
+    def exibir(self) -> None:
+        """Imprime a estrutura da árvore com alturas e fatores de balanceamento."""
+        if self.raiz is None:
+            print("Árvore vazia.")
+            return
+
+        def linha(no: NoAVL, rotulo: str) -> str:
+            fator = self._obter_fator_balanceamento(no)
+            return f"{rotulo}{no.veiculo.renavam} (altura={no.altura}, FB={fator})"
+
+        print(linha(self.raiz, "Raiz: "))
+
+        def percorrer(no: NoAVL, prefixo: str) -> None:
+            filhos = [("E: ", no.esquerda), ("D: ", no.direita)]
+            presentes = [(rotulo, filho) for rotulo, filho in filhos if filho is not None]
+            for indice, (rotulo, filho) in enumerate(presentes):
+                ultimo = indice == len(presentes) - 1
+                print(prefixo + ("└── " if ultimo else "├── ") + linha(filho, rotulo))
+                percorrer(filho, prefixo + ("    " if ultimo else "│   "))
+
+        percorrer(self.raiz, "")
+
+    def validar(self) -> bool:
+        """Confere ordenação, alturas, balanceamento, unicidade e quantidade."""
+        visitados: set[int] = set()
+
+        def verificar(
+            no: NoAVL | None, limite_inferior: str | None, limite_superior: str | None
+        ) -> tuple[bool, int, int]:
+            if no is None:
+                return True, 0, 0
+            if id(no) in visitados:
+                return False, 0, 0
+            visitados.add(id(no))
+
+            chave = no.veiculo.renavam
+            try:
+                if chave != Veiculo.normalizar_renavam(chave):
+                    return False, 0, 0
+            except (TypeError, ValueError):
+                return False, 0, 0
+            if (limite_inferior is not None and chave <= limite_inferior) or (
+                limite_superior is not None and chave >= limite_superior
+            ):
+                return False, 0, 0
+
+            esquerda_valida, altura_esquerda, quantidade_esquerda = verificar(
+                no.esquerda, limite_inferior, chave
+            )
+            direita_valida, altura_direita, quantidade_direita = verificar(
+                no.direita, chave, limite_superior
+            )
+            altura = 1 + max(altura_esquerda, altura_direita)
+            valido = (
+                esquerda_valida
+                and direita_valida
+                and abs(altura_esquerda - altura_direita) <= 1
+                and no.altura == altura
+            )
+            return valido, altura, 1 + quantidade_esquerda + quantidade_direita
+
+        valida, _, quantidade = verificar(self.raiz, None, None)
+        return valida and quantidade == self.quantidade_nos
