@@ -85,7 +85,7 @@ Estrutura de arquivos padronizada:
 ```text
 projeto/
 │
-├── modelos.py
+├── veiculos.py
 ├── avl.py
 ├── rubro_negra.py
 ├── experimentos.py
@@ -105,7 +105,7 @@ projeto/
 ### Arquivos
 
 ```text
-modelos.py
+veiculos.py
 avl.py
 ```
 
@@ -811,7 +811,7 @@ o programa deverá mostrar informações como:
 
 | Pessoa | Responsabilidade | Arquivos |
 |---|---|---|
-| Pessoa 1 | Modelo `Veiculo` + AVL completa | `modelos.py`, `avl.py` |
+| Pessoa 1 | Modelo `Veiculo` + AVL completa | `veiculos.py`, `avl.py` |
 | Pessoa 2 | Rubro-Negra completa | `rubro_negra.py` |
 | Pessoa 3 | Integração, menu, experimentos, métricas, CSV e README | `main.py`, `experimentos.py`, `README.md` |
 

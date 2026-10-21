@@ -1,4 +1,4 @@
-from veiculo import Veiculo
+from veiculos import Veiculo
 
 
 # Cores permitidas para os nós da árvore rubro-negra.
