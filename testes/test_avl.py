@@ -5,7 +5,7 @@ import io
 import random
 import unittest
 
-from AVLL import ArvoreAVL
+from avl import ArvoreAVL
 from veiculos import Veiculo
 
 

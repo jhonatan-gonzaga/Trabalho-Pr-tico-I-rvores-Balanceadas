@@ -85,16 +85,36 @@ Estrutura de arquivos padronizada:
 ```text
 projeto/
 │
+├── main.py
+├── interface.py
+├── gerenciador.py
 ├── veiculos.py
 ├── avl.py
 ├── rubro_negra.py
 ├── experimentos.py
-├── main.py
 ├── README.md
+├── .gitignore
 │
-└── resultados/
-    └── resultados.csv
+├── testes/
+│   ├── __init__.py
+│   ├── test_avl.py
+│   ├── test_rubro_negra.py
+│   ├── test_integracao.py
+│   └── test_experimentos.py
+│
+├── resultados/
+│   ├── resultados.csv
+│   └── graficos/
+│
+└── docs/
+    ├── TrabalhoPráticoAEDII.pdf
+    ├── divisao_tarefas_cadastro_veiculos.md
+    └── relatorio.pdf
 ```
+
+Os arquivos `resultados.csv`, os gráficos e `relatorio.pdf` serão gerados nas
+etapas de experimentação e elaboração do relatório. Os módulos da aplicação e
+os novos arquivos de teste podem inicialmente conter apenas a estrutura reservada.
 
 ---
 
@@ -365,8 +385,12 @@ A implementação deverá garantir:
 
 ```text
 main.py
+interface.py
+gerenciador.py
 experimentos.py
 README.md
+testes/test_integracao.py
+testes/test_experimentos.py
 resultados/resultados.csv
 ```
 
@@ -813,7 +837,7 @@ o programa deverá mostrar informações como:
 |---|---|---|
 | Pessoa 1 | Modelo `Veiculo` + AVL completa | `veiculos.py`, `avl.py` |
 | Pessoa 2 | Rubro-Negra completa | `rubro_negra.py` |
-| Pessoa 3 | Integração, menu, experimentos, métricas, CSV e README | `main.py`, `experimentos.py`, `README.md` |
+| Pessoa 3 | Integração, menu, experimentos, métricas, CSV e README | `main.py`, `interface.py`, `gerenciador.py`, `experimentos.py`, `README.md`, `testes/test_integracao.py`, `testes/test_experimentos.py` |
 
 ---
 
