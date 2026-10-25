@@ -287,9 +287,12 @@ class InterfaceExperimentos:
             opcao = input("Escolha o experimento: ").upper()
             if opcao == "0":
                 return
+            if opcao == "G":
+                self._gerar_graficos()
+                continue
             acao = acoes.get(opcao)
             if acao is None:
-                print("Opção inválida. Escolha A, B, C, D, T ou 0.")
+                print("Opção inválida. Escolha A, B, C, D, T, G ou 0.")
                 continue
             print("Executando os experimentos...")
             resultados = acao()
@@ -312,7 +315,16 @@ class InterfaceExperimentos:
         print("C. Busca por chaves existentes e inexistentes")
         print("D. Remoção de subconjuntos")
         print("T. Executar todos os experimentos")
+        print("G. Gerar gráficos do CSV")
         print("0. Voltar ao menu principal")
+
+    def _gerar_graficos(self) -> None:
+        # Carrega o gerador ao escolher G e usa o CSV da pasta dos experimentos.
+        from graficos import gerar_graficos
+
+        imagens = gerar_graficos(self.executor.diretorio_resultados / "resultados.csv")
+        if imagens:
+            print(f"Gráficos salvos em: {imagens[0].parent}")
 
     def _exibir_resultados(self, resultados: list[dict]) -> None:
         # Mostra uma linha por medição; os CSVs preservam todas as métricas e configurações.
