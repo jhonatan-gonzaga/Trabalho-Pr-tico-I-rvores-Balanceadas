@@ -3,6 +3,8 @@ from gerenciador import GerenciadorVeiculos
 from veiculos import Veiculo
 
 #literalmente a interface do terminal
+# Essa classe fica responsável somente por interagir com o usuário lendo suas entradas, e enviando para a classe GerenciadorVeiculos, que é responsável por toda a lógica em si.
+#Depois, a classe InterfaceTerminal recebe os resultados do GerenciadorVeiculos e mostra para o usuário. Esse é o pipeline.
 class InterfaceTerminal:
     def __init__(self, gerenciador: GerenciadorVeiculos | None = None) -> None:
         # Usa o gerenciador informado ou cria um novo para o menu.
@@ -30,6 +32,7 @@ class InterfaceTerminal:
         print("Cadastros e remoções atualizam as duas árvores.")
         print("A seleção define qual árvore será consultada ou exibida quando a opção relacionada for escolhida")
 
+        #fica em loop até o usuário digitar 0 para sair
         while True:
             self._exibir_menu()
 
@@ -48,12 +51,13 @@ class InterfaceTerminal:
             acao()
 
     def _exibir_menu(self) -> None:
-        # Mostra as opções, a árvore selecionada e o estado do modo detalhado.
+        # Mostra as opções, a árvore selecionada e o estado do modo detalhado
 
         gerenciador = self.gerenciador
         modo = "ativado" if gerenciador.detalhado else "desativado"
         print(f"\nEstrutura selecionada: {gerenciador.estrutura_selecionada}")
         print(f"Modo detalhado: {modo}")
+
         print("1. Alternar entre AVL e Rubro-Negra")
         print("2. Cadastrar veículo")
         print("3. Buscar por RENAVAM")
@@ -67,6 +71,7 @@ class InterfaceTerminal:
         print("11. Consultar menor e maior RENAVAM")
         print("12. Listar em pré-ordem ou pós-ordem")
         print("13. Ativar/desativar modo detalhado")
+
         print("0. Sair")
 
     def _alternar_estrutura(self) -> None:
@@ -78,12 +83,12 @@ class InterfaceTerminal:
             estrutura = "AVL"
 
         self.gerenciador.selecionar_estrutura(estrutura)
-        
+
         print(f"Estrutura selecionada: {self.gerenciador.estrutura_selecionada}.")
 
     @staticmethod
     def _ler_texto(campo: str) -> str:
-        # Lê um campo não vazio, removendo espaços nas extremidades.
+        #essa classe é para não ter que repetir o código em várias entradas de texto
         while True:
             valor = input(f"{campo}: ").strip()
             if valor:
@@ -93,10 +98,12 @@ class InterfaceTerminal:
     @staticmethod
     def _ler_renavam() -> str:
         # Lê e normaliza o RENAVAM, repetindo entradas sem dígitos.
+
         while True:
             valor = input("RENAVAM: ")
             try:
-                return Veiculo.normalizar_renavam(valor)
+                return Veiculo.normalizar_renavam(valor) #função do veiculo.py de normalizacao do RENAVAM
+
             except ValueError as erro:
                 print(f"RENAVAM inválido: {erro}")
 
@@ -106,30 +113,40 @@ class InterfaceTerminal:
         while True:
             try:
                 ano = int(input("Ano: "))
+
             except ValueError:
                 print("Ano inválido. Informe um número inteiro entre 1 e 9999.")
                 continue
+
             if 1 <= ano <= 9999:
                 return ano
+
             print("Ano inválido. Informe um número inteiro entre 1 e 9999.")
 
     def _cadastrar_veiculo(self) -> None:
         # Lê os dados do veículo e solicita seu cadastro nas duas árvores.
+
         print("\nCadastro de veículo")
+
+        #os dados do veículo
         renavam = self._ler_renavam()
         placa = self._ler_texto("Placa").upper()
         modelo = self._ler_texto("Modelo")
         ano = self._ler_ano()
         proprietario = self._ler_texto("Proprietário")
+
+        #cria o objeto em si com os dados pegados
         veiculo = Veiculo(renavam, placa, modelo, ano, proprietario)
+
         if self.gerenciador.cadastrar_veiculo(veiculo):
             print(f"Veículo {renavam} cadastrado nas duas árvores.")
+
         else:
             print(f"Já existe um veículo com o RENAVAM {renavam}. Cadastro preservado.")
 
     @staticmethod
     def _exibir_veiculo(veiculo: Veiculo) -> None:
-        # Mostra os cinco atributos de um veículo.
+        # Mostra os cinco atributos de um veículo
         print(f"RENAVAM: {veiculo.renavam}")
         print(f"Placa: {veiculo.placa}")
         print(f"Modelo: {veiculo.modelo}")
@@ -137,43 +154,53 @@ class InterfaceTerminal:
         print(f"Proprietário: {veiculo.proprietario}")
 
     def _buscar_veiculo(self) -> None:
-        # Busca o RENAVAM na árvore selecionada e mostra o veículo encontrado.
+        # Busca o RENAVAM na árvore selecionada e mostra o veículo encontrado
+
         print("\nBusca de veículo")
+
         veiculo = self.gerenciador.buscar_veiculo(self._ler_renavam())
+
         if veiculo is None:
             print("Nenhum veículo encontrado com esse RENAVAM.")
             return
+
         print("Veículo encontrado:")
+
         self._exibir_veiculo(veiculo)
 
     def _remover_veiculo(self) -> None:
         # Lê o RENAVAM e solicita a remoção do veículo das duas árvores.
         print("\nRemoção de veículo")
+
         renavam = self._ler_renavam()
+
         if self.gerenciador.remover_veiculo(renavam):
             print(f"Veículo {renavam} removido das duas árvores.")
         else:
             print("Nenhum veículo encontrado com esse RENAVAM.")
 
     def _listar_veiculos(self, ordem: str = "em_ordem") -> None:
-        # Lista os veículos da árvore selecionada no caminhamento informado.
+        # Lista os veículos da árvore selecionada no caminhamento informado. Em ordem por padrão
         veiculos = self.gerenciador.listar_veiculos(ordem)
+
+        #se não tiver veículos
         if not veiculos:
             print("Nenhum veículo cadastrado.")
             return
+
         nomes = {"em_ordem": "em ordem", "pre_ordem": "em pré-ordem", "pos_ordem": "em pós-ordem"}
-        print(f"\nVeículos {nomes[ordem]} — {self.gerenciador.estrutura_selecionada}")
-        print("RENAVAM | Placa | Modelo | Ano | Proprietário")
-        print("-" * 72)
+
+        print(f"\nVeículos {nomes[ordem]} - {self.gerenciador.estrutura_selecionada}")
+
         for veiculo in veiculos:
-            print(
-                f"{veiculo.renavam} | {veiculo.placa} | {veiculo.modelo} | "
-                f"{veiculo.ano} | {veiculo.proprietario}"
-            )
-        print(f"Total: {len(veiculos)} veículo(s).")
+            print()
+            self._exibir_veiculo(veiculo)
+
+        print(f"\nTotal: {len(veiculos)} veículo(s).")
 
     def _exibir_altura_e_quantidade(self) -> None:
-        # Mostra a altura e a quantidade de nós da árvore selecionada.
+        # Mostra a altura e a quantidade de nós da árvore selecionada
+
         estatisticas = self.gerenciador.obter_estatisticas()
         print(f"\nEstrutura: {estatisticas['estrutura']}")
         print(f"Altura: {estatisticas['altura']}")
