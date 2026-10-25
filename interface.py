@@ -66,7 +66,7 @@ class InterfaceTerminal:
         print("6. Exibir altura e quantidade de nós")
         print("7. Exibir estatísticas de rebalanceamento")
         print("8. Validar as propriedades das árvores")
-        print("9. Executar experimentos automáticos (em desenvolvimento)")
+        print("9. Executar experimentos automáticos")
         print("10. Exibir estrutura da árvore")
         print("11. Consultar menor e maior RENAVAM")
         print("12. Listar em pré-ordem ou pós-ordem")
@@ -228,11 +228,8 @@ class InterfaceTerminal:
 
     @staticmethod
     def _executar_experimentos() -> None:
-        # Chama os experimentos e informa quando ainda não estão implementados.
-        try:
-            experimentos.executar_experimentos()
-        except NotImplementedError as erro:
-            print(erro)
+        # Abre o submenu dos experimentos sem alterar os cadastros do menu principal.
+        InterfaceExperimentos().executar()
 
     def _exibir_arvore(self) -> None:
         # Exibe a estrutura dos nós da árvore selecionada.
@@ -265,3 +262,83 @@ class InterfaceTerminal:
         ativo = self.gerenciador.alternar_modo_detalhado()
         estado = "ativado" if ativo else "desativado"
         print(f"Modo detalhado {estado} para {self.gerenciador.estrutura_selecionada}.")
+
+
+class InterfaceExperimentos:
+    # Mostra as opções de experimentação e apresenta as métricas retornadas pelo executor.
+
+    def __init__(self, executor: experimentos.ExperimentosArvores | None = None) -> None:
+        # Usa o executor informado ou cria um com os parâmetros do enunciado.
+        if executor is None:
+            executor = experimentos.ExperimentosArvores()
+        self.executor = executor
+
+    def executar(self) -> None:
+        # Executa o experimento escolhido, salva seus resultados e permite outra escolha.
+        acoes = {
+            "A": self.executor.insercao_crescente,
+            "B": self.executor.insercao_aleatoria,
+            "C": self.executor.buscas,
+            "D": self.executor.remocoes,
+            "T": self.executor.todos,
+        }
+        while True:
+            self._exibir_menu()
+            opcao = input("Escolha o experimento: ").upper()
+            if opcao == "0":
+                return
+            acao = acoes.get(opcao)
+            if acao is None:
+                print("Opção inválida. Escolha A, B, C, D, T ou 0.")
+                continue
+            print("Executando os experimentos...")
+            resultados = acao()
+            self.executor.salvar_csv()
+            self._exibir_resultados(resultados)
+            print(f"Resultados salvos em: {self.executor.diretorio_resultados / 'resultados.csv'}")
+            if opcao in ("C", "T"):
+                print(f"Visitas por busca salvas em: {self.executor.diretorio_resultados / 'buscas.csv'}")
+
+    def _exibir_menu(self) -> None:
+        # Apresenta os quatro cenários e os parâmetros usados nas medições.
+        print("\nExperimentos comparativos — AVL e Rubro-Negra")
+        print(f"Tamanhos: {self.executor.tamanhos}")
+        print(f"Semente inicial: {self.executor.semente}; repetições: {self.executor.repeticoes}")
+        print("Cada repetição usa a semente inicial mais seu índice, começando em zero.")
+        print(f"Buscas por grupo: até {self.executor.limite_buscas} por tamanho.")
+        print(f"Percentuais de remoção: {self.executor.percentuais_remocao}")
+        print("A. Inserção em ordem crescente")
+        print("B. Inserção em ordem aleatória")
+        print("C. Busca por chaves existentes e inexistentes")
+        print("D. Remoção de subconjuntos")
+        print("T. Executar todos os experimentos")
+        print("0. Voltar ao menu principal")
+
+    def _exibir_resultados(self, resultados: list[dict]) -> None:
+        # Mostra uma linha por medição; os CSVs preservam todas as métricas e configurações.
+        print("\nExp | Árvore | n | rep | ordem | grupo | altura | tempo(s) | rotações | recolorações | média visitas")
+        for resultado in resultados:
+            experimento = resultado["experimento"]
+            grupo = "-"
+            media = "-"
+            recoloracoes = resultado["recoloracoes"]
+            if experimento in ("A", "B"):
+                tempo = resultado["tempo_insercao"]
+                rotacoes = resultado["rotacoes_insercao"]
+            elif experimento == "C":
+                grupo = resultado["tipo_busca"]
+                tempo = resultado["tempo_busca"]
+                media = f"{resultado['media_nos_visitados']:.2f}"
+                rotacoes = 0
+            else:
+                grupo = f"{resultado['percentual_remocao']}%"
+                tempo = resultado["tempo_remocao"]
+                rotacoes = resultado["rotacoes_remocao"]
+            print(
+                f"{experimento} | {resultado['estrutura']} | {resultado['n']} | "
+                f"{resultado['repeticao']} | {resultado['ordem_insercao']} | {grupo} | "
+                f"{resultado['altura_antes']}->{resultado['altura_final']} | "
+                f"{tempo:.6f} | {rotacoes} | {recoloracoes} | {media}"
+            )
+        print("Rotações e recolorações da tabela referem-se à operação medida.")
+        print("Os tempos podem variar entre execuções; compare também alturas e contadores.")

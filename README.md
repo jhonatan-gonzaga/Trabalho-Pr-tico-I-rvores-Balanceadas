@@ -42,21 +42,48 @@ projeto/
 | `resultados/` | Resultados brutos e gráficos produzidos pelos experimentos. |
 | `docs/` | Enunciado, divisão de tarefas e relatório da entrega. |
 
-Os arquivos `main.py`, `interface.py`, `gerenciador.py` e `experimentos.py`
-estão reservados para implementação. O menu e os experimentos ainda não estão
-disponíveis. Em `testes/`, apenas `test_avl.py` possui testes implementados;
-os demais arquivos de teste estão reservados para as próximas etapas.
+O menu textual e a integração estão implementados em `main.py`, `interface.py`
+e `gerenciador.py`. Há testes da AVL em `testes/test_avl.py` e testes do
+gerenciador e da interface em `testes/test_integracao.py`. Os arquivos de testes
+específicos da Rubro-Negra e dos experimentos continuam reservados.
+
+A opção de experimentos automáticos já aparece no menu, mas informa que a
+implementação ainda está pendente. `experimentos.executar_experimentos()` é o
+ponto reservado para conectar essa etapa à interface.
 
 `resultados/resultados.csv`, os gráficos e `docs/relatorio.pdf` serão criados
 quando os experimentos e o relatório forem desenvolvidos. O arquivo `.gitkeep`
 permite versionar o diretório de gráficos enquanto ele estiver vazio.
 
-## Requisitos e execução dos testes
+## Requisitos e execução
 
 Use Python 3.10 ou superior. O código atual utiliza apenas a biblioteca padrão,
 sem dependências externas para instalar.
 
-Execute os comandos na raiz do projeto. Para descobrir e executar os testes:
+Execute os comandos na raiz do projeto. Para iniciar o menu:
+
+```bash
+python3 main.py
+```
+
+A seleção inicial é AVL. A opção `1` alterna diretamente entre AVL e Rubro-Negra.
+Cadastros e remoções atualizam as duas árvores com os
+mesmos registros; a seleção determina qual árvore será consultada ou exibida.
+A validação verifica as duas estruturas. Os dados são mantidos em memória
+somente durante a execução; não há salvamento dos cadastros entre sessões.
+
+O menu permite cadastrar, buscar e remover por RENAVAM, listar em ordem,
+consultar altura e quantidade de nós, exibir rotações e recolorações, e validar
+as árvores. Também oferece visualização da estrutura, mínimo e máximo,
+pré-ordem, pós-ordem e modo detalhado da árvore selecionada. A árvore vazia tem
+altura zero; uma folha tem altura um.
+
+As estatísticas de comparações são acumuladas desde a criação da árvore e
+incluem inserções, buscas e remoções; não representam uma média de busca.
+
+Use a opção `0` para sair.
+
+Para descobrir e executar os testes:
 
 ```bash
 python3 -m unittest discover -s testes -v
