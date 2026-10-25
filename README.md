@@ -3,6 +3,11 @@
 Implementação e comparação de árvores AVL e Rubro-Negra para o minimundo
 **Cadastro de Veículos**, usando o RENAVAM normalizado como chave única.
 
+## Integrantes
+- Jhonatan Gonzaga
+- Rodrigo Torres
+- Sérgio Augusto
+
 ## Estrutura do projeto
 
 ```text
